@@ -142,4 +142,14 @@ function showHighscoreList() {
 saveButton.addEventListener('click', () => {
     const playerName = playerNameInput.value;
     if (playerName && score > 0) {
-        highs
+        highscores.push({ name: playerName, score });
+        highscores.sort((a, b) => b.score - a.score);
+        if (highscores.length > 20) highscores.pop();
+        localStorage.setItem('highscores', JSON.stringify(highscores));
+        showHighscoreList();
+    }
+});
+
+restartButton.addEventListener('click', () => {
+    location.reload();
+});
