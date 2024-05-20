@@ -52,3 +52,15 @@ body {
 .score-board, .save-score, .highscore-list {
     margin-top: 10px;
 }
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #000;
+    text-align: center;
+    z-index: 1000;
+}
