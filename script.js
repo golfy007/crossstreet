@@ -25,7 +25,7 @@ function startGame() {
     gameArea.style.display = 'block';
     scoreBoard.style.display = 'block';
     carCreationInterval = setInterval(createCar, carIntervalTime);
-    difficultyInterval = setInterval(increaseDifficulty, 10000);
+    difficultyInterval = setInterval(increaseDifficulty, 3000); // เพิ่มความยากทุก 3 วินาที
 }
 
 document.addEventListener('keydown', movePlayer);
