@@ -4,6 +4,7 @@ const scoreBoard = document.getElementById('score');
 const highscoreBoard = document.getElementById('highscore');
 const saveButton = document.getElementById('saveButton');
 const playerNameInput = document.getElementById('playerName');
+const saveScore = document.getElementById('saveScore');
 let score = 0;
 let highscore = localStorage.getItem('highscore') || 0;
 let carSpeed = 5;
@@ -58,14 +59,16 @@ function createCar() {
         car.style.top = `${car.offsetTop + carSpeed}px`;
 
         if (isCollision(player, car)) {
-            alert('Game Over');
             clearInterval(carInterval);
             if (score > highscore) {
                 highscore = score;
                 localStorage.setItem('highscore', highscore);
                 highscoreBoard.textContent = highscore;
+                saveScore.style.display = 'block';
+            } else {
+                alert('Game Over');
+                location.reload();
             }
-            location.reload();
         }
 
         if (car.offsetTop > gameArea.offsetHeight) {
@@ -104,5 +107,7 @@ saveButton.addEventListener('click', () => {
     const playerName = playerNameInput.value;
     if (playerName && score > 0) {
         alert(`Highscore saved!\nName: ${playerName}\nScore: ${score}`);
+        saveScore.style.display = 'none';
+        location.reload();
     }
 });
