@@ -1,6 +1,7 @@
 const gameArea = document.getElementById('gameArea');
 const player = document.getElementById('player');
-const scoreBoard = document.getElementById('score');
+const scoreBoard = document.getElementById('scoreBoard');
+const scoreDisplay = document.getElementById('score');
 const highscoreBoard = document.getElementById('highscore');
 const saveButton = document.getElementById('saveButton');
 const playerNameInput = document.getElementById('playerName');
@@ -8,12 +9,24 @@ const saveScore = document.getElementById('saveScore');
 const highscoreList = document.getElementById('highscoreList');
 const highscoreUl = document.getElementById('highscoreUl');
 const restartButton = document.getElementById('restartButton');
+const startButton = document.getElementById('startButton');
 let score = 0;
 let carSpeed = 5;
 let carIntervalTime = 2000;
-
+let carCreationInterval;
+let difficultyInterval;
 let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
 updateHighscoreBoard();
+
+startButton.addEventListener('click', startGame);
+
+function startGame() {
+    startButton.style.display = 'none';
+    gameArea.style.display = 'block';
+    scoreBoard.style.display = 'block';
+    carCreationInterval = setInterval(createCar, carIntervalTime);
+    difficultyInterval = setInterval(increaseDifficulty, 10000);
+}
 
 document.addEventListener('keydown', movePlayer);
 gameArea.addEventListener('touchstart', startDrag);
@@ -70,7 +83,7 @@ function createCar() {
             clearInterval(carInterval);
             car.remove();
             score++;
-            scoreBoard.textContent = score;
+            scoreDisplay.textContent = score;
         }
     }, 50);
 }
@@ -96,6 +109,8 @@ function increaseDifficulty() {
 }
 
 function endGame() {
+    clearInterval(carCreationInterval);
+    clearInterval(difficultyInterval);
     if (score > (highscores[highscores.length - 1]?.score || 0) || highscores.length < 20) {
         saveScore.style.display = 'block';
     } else {
@@ -114,9 +129,6 @@ function showHighscoreList() {
     updateHighscoreBoard();
 }
 
-let carCreationInterval = setInterval(createCar, carIntervalTime);
-setInterval(increaseDifficulty, 10000);
-
 saveButton.addEventListener('click', () => {
     const playerName = playerNameInput.value;
     if (playerName && score > 0) {
@@ -130,3 +142,4 @@ saveButton.addEventListener('click', () => {
 
 restartButton.addEventListener('click', () => {
     location.reload();
+});
