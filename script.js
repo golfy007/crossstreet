@@ -3,6 +3,7 @@ const player = document.getElementById('player');
 const scoreBoard = document.getElementById('scoreBoard');
 const scoreDisplay = document.getElementById('score');
 const highscoreBoard = document.getElementById('highscore');
+const highscoreNameDisplay = document.getElementById('highscoreName');
 const saveButton = document.getElementById('saveButton');
 const playerNameInput = document.getElementById('playerName');
 const saveScore = document.getElementById('saveScore');
@@ -19,8 +20,10 @@ let carCount = 1;
 let carCreationInterval;
 let difficultyInterval;
 let carIncreaseInterval;
+
 let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
 updateHighscoreBoard();
+displayTopHighscore();
 
 startButton.addEventListener('click', startGame);
 surrenderButton.addEventListener('click', endGame);
@@ -143,6 +146,16 @@ function updateHighscoreBoard() {
     highscoreUl.innerHTML = highscores.map((entry, index) => `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`).join('');
 }
 
+function displayTopHighscore() {
+    if (highscores.length > 0) {
+        highscoreBoard.textContent = highscores[0].score;
+        highscoreNameDisplay.textContent = highscores[0].name;
+    } else {
+        highscoreBoard.textContent = '0';
+        highscoreNameDisplay.textContent = '';
+    }
+}
+
 function showHighscoreList() {
     saveScore.style.display = 'none';
     highscoreList.style.display = 'block';
@@ -157,6 +170,7 @@ saveButton.addEventListener('click', () => {
         if (highscores.length > 20) highscores.pop();
         localStorage.setItem('highscores', JSON.stringify(highscores));
         showHighscoreList();
+        displayTopHighscore();
     }
 });
 
