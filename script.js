@@ -5,12 +5,15 @@ const highscoreBoard = document.getElementById('highscore');
 const saveButton = document.getElementById('saveButton');
 const playerNameInput = document.getElementById('playerName');
 const saveScore = document.getElementById('saveScore');
+const highscoreList = document.getElementById('highscoreList');
+const highscoreUl = document.getElementById('highscoreUl');
+const restartButton = document.getElementById('restartButton');
 let score = 0;
-let highscore = localStorage.getItem('highscore') || 0;
 let carSpeed = 5;
 let carIntervalTime = 2000;
 
-highscoreBoard.textContent = highscore;
+let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
+updateHighscoreBoard();
 
 document.addEventListener('keydown', movePlayer);
 gameArea.addEventListener('touchstart', startDrag);
@@ -60,15 +63,7 @@ function createCar() {
 
         if (isCollision(player, car)) {
             clearInterval(carInterval);
-            if (score > highscore) {
-                highscore = score;
-                localStorage.setItem('highscore', highscore);
-                highscoreBoard.textContent = highscore;
-                saveScore.style.display = 'block';
-            } else {
-                alert('Game Over');
-                location.reload();
-            }
+            endGame();
         }
 
         if (car.offsetTop > gameArea.offsetHeight) {
@@ -100,14 +95,38 @@ function increaseDifficulty() {
     carCreationInterval = setInterval(createCar, carIntervalTime);
 }
 
+function endGame() {
+    if (score > (highscores[highscores.length - 1]?.score || 0) || highscores.length < 20) {
+        saveScore.style.display = 'block';
+    } else {
+        showHighscoreList();
+    }
+}
+
+function updateHighscoreBoard() {
+    highscores = JSON.parse(localStorage.getItem('highscores')) || [];
+    highscoreUl.innerHTML = highscores.map((entry, index) => `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`).join('');
+}
+
+function showHighscoreList() {
+    saveScore.style.display = 'none';
+    highscoreList.style.display = 'block';
+    updateHighscoreBoard();
+}
+
 let carCreationInterval = setInterval(createCar, carIntervalTime);
 setInterval(increaseDifficulty, 10000);
 
 saveButton.addEventListener('click', () => {
     const playerName = playerNameInput.value;
     if (playerName && score > 0) {
-        alert(`Highscore saved!\nName: ${playerName}\nScore: ${score}`);
-        saveScore.style.display = 'none';
-        location.reload();
+        highscores.push({ name: playerName, score });
+        highscores.sort((a, b) => b.score - a.score);
+        if (highscores.length > 20) highscores.pop();
+        localStorage.setItem('highscores', JSON.stringify(highscores));
+        showHighscoreList();
     }
 });
+
+restartButton.addEventListener('click', () => {
+    location.reload();
