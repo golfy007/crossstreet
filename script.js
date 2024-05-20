@@ -1,11 +1,20 @@
-// script.js
 const gameArea = document.getElementById('gameArea');
 const player = document.getElementById('player');
 const scoreBoard = document.getElementById('score');
+const highscoreBoard = document.getElementById('highscore');
+const saveButton = document.getElementById('saveButton');
+const playerNameInput = document.getElementById('playerName');
 let score = 0;
+let highscore = localStorage.getItem('highscore') || 0;
+
+highscoreBoard.textContent = highscore;
 
 document.addEventListener('keydown', movePlayer);
-gameArea.addEventListener('touchstart', movePlayerTouch);
+gameArea.addEventListener('touchstart', startDrag);
+gameArea.addEventListener('touchmove', dragPlayer);
+gameArea.addEventListener('touchend', endDrag);
+
+let dragging = false;
 
 function movePlayer(e) {
     const left = player.offsetLeft;
@@ -17,24 +26,24 @@ function movePlayer(e) {
     }
 }
 
-function movePlayerTouch(e) {
-    const touchX = e.touches[0].clientX;
-    const areaLeft = gameArea.offsetLeft;
-    const areaWidth = gameArea.offsetWidth;
+function startDrag(e) {
+    dragging = true;
+}
 
-    if (touchX < areaLeft + areaWidth / 2) {
-        // Move left
-        const left = player.offsetLeft;
-        if (left > 0) {
-            player.style.left = `${left - 20}px`;
-        }
-    } else {
-        // Move right
-        const left = player.offsetLeft;
-        if (left < gameArea.offsetWidth - player.offsetWidth) {
-            player.style.left = `${left + 20}px`;
-        }
+function dragPlayer(e) {
+    if (dragging) {
+        const touchX = e.touches[0].clientX;
+        const areaLeft = gameArea.offsetLeft;
+        const areaWidth = gameArea.offsetWidth;
+        let newLeft = touchX - areaLeft - player.offsetWidth / 2;
+        if (newLeft < 0) newLeft = 0;
+        if (newLeft > areaWidth - player.offsetWidth) newLeft = areaWidth - player.offsetWidth;
+        player.style.left = `${newLeft}px`;
     }
+}
+
+function endDrag() {
+    dragging = false;
 }
 
 function createCar() {
@@ -49,6 +58,11 @@ function createCar() {
         if (isCollision(player, car)) {
             alert('Game Over');
             clearInterval(carInterval);
+            if (score > highscore) {
+                highscore = score;
+                localStorage.setItem('highscore', highscore);
+                highscoreBoard.textContent = highscore;
+            }
             location.reload();
         }
 
@@ -73,3 +87,10 @@ function isCollision(player, car) {
 }
 
 setInterval(createCar, 2000);
+
+saveButton.addEventListener('click', () => {
+    const playerName = playerNameInput.value;
+    if (playerName && score > 0) {
+        alert(`Highscore saved!\nName: ${playerName}\nScore: ${score}`);
+    }
+});
