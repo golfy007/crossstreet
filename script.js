@@ -13,6 +13,7 @@ const startButton = document.getElementById('startButton');
 let score = 0;
 let carSpeed = 5;
 let carIntervalTime = 2000;
+let carCount = 1;
 let carCreationInterval;
 let difficultyInterval;
 let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
@@ -24,7 +25,7 @@ function startGame() {
     startButton.style.display = 'none';
     gameArea.style.display = 'block';
     scoreBoard.style.display = 'block';
-    carCreationInterval = setInterval(createCar, carIntervalTime);
+    carCreationInterval = setInterval(createCars, carIntervalTime);
     difficultyInterval = setInterval(increaseDifficulty, 3000); // เพิ่มความยากทุก 3 วินาที
 }
 
@@ -65,6 +66,12 @@ function endDrag() {
     dragging = false;
 }
 
+function createCars() {
+    for (let i = 0; i < carCount; i++) {
+        createCar();
+    }
+}
+
 function createCar() {
     const car = document.createElement('div');
     car.classList.add('car');
@@ -101,11 +108,12 @@ function isCollision(player, car) {
 
 function increaseDifficulty() {
     carSpeed += 1;
+    carCount += 1;
     if (carIntervalTime > 500) {
         carIntervalTime -= 100;
     }
     clearInterval(carCreationInterval);
-    carCreationInterval = setInterval(createCar, carIntervalTime);
+    carCreationInterval = setInterval(createCars, carIntervalTime);
 }
 
 function endGame() {
@@ -120,26 +128,4 @@ function endGame() {
 
 function updateHighscoreBoard() {
     highscores = JSON.parse(localStorage.getItem('highscores')) || [];
-    highscoreUl.innerHTML = highscores.map((entry, index) => `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`).join('');
-}
-
-function showHighscoreList() {
-    saveScore.style.display = 'none';
-    highscoreList.style.display = 'block';
-    updateHighscoreBoard();
-}
-
-saveButton.addEventListener('click', () => {
-    const playerName = playerNameInput.value;
-    if (playerName && score > 0) {
-        highscores.push({ name: playerName, score });
-        highscores.sort((a, b) => b.score - a.score);
-        if (highscores.length > 20) highscores.pop();
-        localStorage.setItem('highscores', JSON.stringify(highscores));
-        showHighscoreList();
-    }
-});
-
-restartButton.addEventListener('click', () => {
-    location.reload();
-});
+   
