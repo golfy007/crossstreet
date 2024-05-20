@@ -1,61 +1,75 @@
-/* style.css */
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+// script.js
+const gameArea = document.getElementById('gameArea');
+const player = document.getElementById('player');
+const scoreBoard = document.getElementById('score');
+let score = 0;
+
+document.addEventListener('keydown', movePlayer);
+gameArea.addEventListener('touchstart', movePlayerTouch);
+
+function movePlayer(e) {
+    const left = player.offsetLeft;
+    if (e.key === 'ArrowLeft' && left > 0) {
+        player.style.left = `${left - 20}px`;
+    }
+    if (e.key === 'ArrowRight' && left < gameArea.offsetWidth - player.offsetWidth) {
+        player.style.left = `${left + 20}px`;
+    }
 }
 
-.game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+function movePlayerTouch(e) {
+    const touchX = e.touches[0].clientX;
+    const areaLeft = gameArea.offsetLeft;
+    const areaWidth = gameArea.offsetWidth;
+
+    if (touchX < areaLeft + areaWidth / 2) {
+        // Move left
+        const left = player.offsetLeft;
+        if (left > 0) {
+            player.style.left = `${left - 20}px`;
+        }
+    } else {
+        // Move right
+        const left = player.offsetLeft;
+        if (left < gameArea.offsetWidth - player.offsetWidth) {
+            player.style.left = `${left + 20}px`;
+        }
+    }
 }
 
-.game-area {
-    position: relative;
-    width: 300px;
-    height: 500px;
-    background-color: #ddd;
-    overflow: hidden;
-    border: 2px solid #000;
+function createCar() {
+    const car = document.createElement('div');
+    car.classList.add('car');
+    car.style.left = `${Math.floor(Math.random() * (gameArea.offsetWidth - 40))}px`;
+    gameArea.appendChild(car);
+
+    let carInterval = setInterval(() => {
+        car.style.top = `${car.offsetTop + 5}px`;
+
+        if (isCollision(player, car)) {
+            alert('Game Over');
+            clearInterval(carInterval);
+            location.reload();
+        }
+
+        if (car.offsetTop > gameArea.offsetHeight) {
+            clearInterval(carInterval);
+            car.remove();
+            score++;
+            scoreBoard.textContent = score;
+        }
+    }, 50);
 }
 
-.player {
-    width: 30px;
-    height: 30px;
-    background-color: pink;
-    position: absolute;
-    bottom: 10px;
-    left: calc(50% - 15px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+function isCollision(player, car) {
+    const playerRect = player.getBoundingClientRect();
+    const carRect = car.getBoundingClientRect();
+    return !(
+        playerRect.top > carRect.bottom ||
+        playerRect.bottom < carRect.top ||
+        playerRect.right < carRect.left ||
+        playerRect.left > carRect.right
+    );
 }
 
-.name-tag {
-    position: absolute;
-    top: -20px;
-    background-color: white;
-    border: 1px solid #000;
-    padding: 2px 4px;
-    font-size: 12px;
-    border-radius: 3px;
-}
-
-.car {
-    width: 40px;
-    height: 70px;
-    background-color: red;
-    position: absolute;
-    top: 0;
-}
-
-.score-board {
-    margin-top: 10px;
-}
+setInterval(createCar, 2000);
