@@ -10,6 +10,7 @@ const highscoreList = document.getElementById('highscoreList');
 const highscoreUl = document.getElementById('highscoreUl');
 const restartButton = document.getElementById('restartButton');
 const startButton = document.getElementById('startButton');
+const surrenderButton = document.getElementById('surrenderButton');
 const gameOver = document.getElementById('gameOver');
 let score = 0;
 let carSpeed = 5;
@@ -17,17 +18,21 @@ let carIntervalTime = 2000;
 let carCount = 1;
 let carCreationInterval;
 let difficultyInterval;
+let carIncreaseInterval;
 let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
 updateHighscoreBoard();
 
 startButton.addEventListener('click', startGame);
+surrenderButton.addEventListener('click', endGame);
 
 function startGame() {
     startButton.style.display = 'none';
     gameArea.style.display = 'block';
     scoreBoard.style.display = 'block';
+    surrenderButton.style.display = 'block';
     carCreationInterval = setInterval(createCars, carIntervalTime);
-    difficultyInterval = setInterval(increaseDifficulty, 3000); // เพิ่มความยากทุก 3 วินาที
+    difficultyInterval = setInterval(increaseSpeed, 120000); // เพิ่มความเร็วทุก 2 นาที
+    carIncreaseInterval = setInterval(increaseCarCount, 7000); // เพิ่มจำนวนรถทุก 7 วินาที
 }
 
 document.addEventListener('keydown', movePlayer);
@@ -107,9 +112,12 @@ function isCollision(player, car) {
     );
 }
 
-function increaseDifficulty() {
-    carSpeed += 1;
+function increaseCarCount() {
     carCount += 1;
+}
+
+function increaseSpeed() {
+    carSpeed += 1;
     if (carIntervalTime > 500) {
         carIntervalTime -= 100;
     }
@@ -120,7 +128,9 @@ function increaseDifficulty() {
 function endGame() {
     clearInterval(carCreationInterval);
     clearInterval(difficultyInterval);
+    clearInterval(carIncreaseInterval);
     gameOver.style.display = 'block';
+    surrenderButton.style.display = 'none';
     if (score > (highscores[highscores.length - 1]?.score || 0) || highscores.length < 20) {
         saveScore.style.display = 'block';
     } else {
