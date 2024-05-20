@@ -27,8 +27,9 @@ body {
 
 .player {
     width: 30px;
-    height: 30px;
-    background-color: pink;
+    height: 50px;
+    background: url('woman.png') no-repeat center center;
+    background-size: contain;
     position: absolute;
     bottom: 10px;
     left: calc(50% - 15px);
