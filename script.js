@@ -10,6 +10,7 @@ const highscoreList = document.getElementById('highscoreList');
 const highscoreUl = document.getElementById('highscoreUl');
 const restartButton = document.getElementById('restartButton');
 const startButton = document.getElementById('startButton');
+const gameOver = document.getElementById('gameOver');
 let score = 0;
 let carSpeed = 5;
 let carIntervalTime = 2000;
@@ -119,6 +120,7 @@ function increaseDifficulty() {
 function endGame() {
     clearInterval(carCreationInterval);
     clearInterval(difficultyInterval);
+    gameOver.style.display = 'block';
     if (score > (highscores[highscores.length - 1]?.score || 0) || highscores.length < 20) {
         saveScore.style.display = 'block';
     } else {
@@ -128,4 +130,16 @@ function endGame() {
 
 function updateHighscoreBoard() {
     highscores = JSON.parse(localStorage.getItem('highscores')) || [];
-   
+    highscoreUl.innerHTML = highscores.map((entry, index) => `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`).join('');
+}
+
+function showHighscoreList() {
+    saveScore.style.display = 'none';
+    highscoreList.style.display = 'block';
+    updateHighscoreBoard();
+}
+
+saveButton.addEventListener('click', () => {
+    const playerName = playerNameInput.value;
+    if (playerName && score > 0) {
+        highs
