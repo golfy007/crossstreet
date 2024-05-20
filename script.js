@@ -6,6 +6,8 @@ const saveButton = document.getElementById('saveButton');
 const playerNameInput = document.getElementById('playerName');
 let score = 0;
 let highscore = localStorage.getItem('highscore') || 0;
+let carSpeed = 5;
+let carIntervalTime = 2000;
 
 highscoreBoard.textContent = highscore;
 
@@ -53,7 +55,7 @@ function createCar() {
     gameArea.appendChild(car);
 
     let carInterval = setInterval(() => {
-        car.style.top = `${car.offsetTop + 5}px`;
+        car.style.top = `${car.offsetTop + carSpeed}px`;
 
         if (isCollision(player, car)) {
             alert('Game Over');
@@ -86,7 +88,17 @@ function isCollision(player, car) {
     );
 }
 
-setInterval(createCar, 2000);
+function increaseDifficulty() {
+    carSpeed += 1;
+    if (carIntervalTime > 500) {
+        carIntervalTime -= 100;
+    }
+    clearInterval(carCreationInterval);
+    carCreationInterval = setInterval(createCar, carIntervalTime);
+}
+
+let carCreationInterval = setInterval(createCar, carIntervalTime);
+setInterval(increaseDifficulty, 10000);
 
 saveButton.addEventListener('click', () => {
     const playerName = playerNameInput.value;
